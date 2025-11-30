@@ -34,7 +34,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                                 //publiczne endpointy
                                 .requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "api/games/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/games/**").permitAll()
+                                .requestMatchers("/error").permitAll()
                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
                                 //wszystko inne wymaga logowania
                                 .anyRequest().authenticated()
