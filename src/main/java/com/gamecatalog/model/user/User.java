@@ -51,6 +51,19 @@ public class User implements UserDetails {
     @CreationTimestamp
     private Date updatedAt;
 
+    // --- Odkomentować, gdy powstaną encje Favorite i Review ---
+    /*
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Favorite> favorites;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Review> reviews;
+    */
+
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities(){
         return List.of(new SimpleGrantedAuthority("ROLE: " + role.name()));
