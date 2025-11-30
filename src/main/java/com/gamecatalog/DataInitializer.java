@@ -107,16 +107,32 @@ public class DataInitializer implements CommandLineRunner {
                 new Region("Other", "Rest of World"),
                 new Region("Global", "Global")
         ).forEach(r -> {
-            regionRepository.save(r);
-            regionCache.put(r.getCode(), r);
+            var existing = regionRepository.findAll().stream()
+                    .filter(reg -> reg.getCode().equals(r.getCode()))
+                    .findFirst();
+
+            if (existing.isPresent()) {
+                regionCache.put(r.getCode(), existing.get());
+            } else {
+                regionRepository.save(r);
+                regionCache.put(r.getCode(), r);
+            }
         });
     }
 
     private void initOS() {
         List.of("Windows", "MacOS", "Linux").forEach(name -> {
-            OperatingSystem os = new OperatingSystem(name);
-            osRepository.save(os);
-            osCache.put(name, os);
+            var existing = osRepository.findAll().stream()
+                    .filter(os -> os.getName().equals(name))
+                    .findFirst();
+
+            if (existing.isPresent()) {
+                osCache.put(name, existing.get());
+            } else {
+                OperatingSystem os = new OperatingSystem(name);
+                osRepository.save(os);
+                osCache.put(name, os);
+            }
         });
     }
 
