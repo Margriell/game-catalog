@@ -1,5 +1,7 @@
 package com.gamecatalog.model.user;
 
+import com.gamecatalog.model.Favourite;
+import com.gamecatalog.model.Review;
 import com.gamecatalog.model.user.enums.Role;
 import com.gamecatalog.model.user.enums.Status;
 import jakarta.persistence.*;
@@ -12,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -51,14 +54,11 @@ public class User implements UserDetails {
     @CreationTimestamp
     private Date updatedAt;
 
-    // --- Odkomentować, gdy powstaną encje Favorite i Review ---
-    /*
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Favorite> favorites;
+    private Set<Favourite> favorites;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Review> reviews;
-    */
 
     public String getFullName() {
         return firstName + " " + lastName;
