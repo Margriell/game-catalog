@@ -7,12 +7,17 @@ import lombok.Data;
 
 @Data
 public class RegisterRequest {
-    @NotBlank
+    @NotBlank(message = "Imię jest wymagane")
     private String firstName;
-    @NotBlank
+
+    @NotBlank(message = "Nazwisko jest wymagane")
     private String lastName;
-    @NotBlank @Email
+
+    @NotBlank(message = "Email jest wymagany")
+    @Email(message = "Niepoprawny format adresu email")
     private String email;
-    @NotBlank @Size(min = 6)
+
+    @NotBlank(message = "Hasło jest wymagane")
+    @Size(min = 6, message = "Hasło musi mieć co najmniej 6 znaków")
     private String password;
 }

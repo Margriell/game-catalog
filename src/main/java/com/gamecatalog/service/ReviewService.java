@@ -26,14 +26,14 @@ public class ReviewService {
     @Transactional
     public ReviewResponse addReview(String userEmail, Long gameId, ReviewRequest reviewRequest) {
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("Nie znaleziono użytkownika"));
 
         if (reviewRepository.existsByUserIdAndGameId(user.getId(), gameId)) {
-            throw new RuntimeException("User has already reviewed this game");
+            throw new RuntimeException("Już dodałeś recenzję dla tej gry");
         }
 
         Game game = gameRepository.findById(gameId)
-                .orElseThrow(() -> new RuntimeException("Game not found"));
+                .orElseThrow(() -> new RuntimeException("Nie znaleziono gry"));
 
 
         Review review = Review.builder()

@@ -26,28 +26,28 @@ public class FavouriteService {
     @Transactional
     public String toggleFavourite(String userEmail, Long gameId){
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("Nie znaleziono użytkownika"));
 
         Game game = gameRepository.findById(gameId)
-                .orElseThrow(() -> new RuntimeException("Game not found"));
+                .orElseThrow(() -> new RuntimeException("Nie znaleziono gry"));
 
         Optional<Favourite> existing = favouriteRepository.findByUserIdAndGameId(user.getId(), gameId);
 
         if(existing.isPresent()) {
             favouriteRepository.delete(existing.get());
-            return "Game removed from favourites";
+            return "Gra usunięta z ulubionych";
         } else  {
             Favourite favourite = Favourite.builder()
                     .user(user)
                     .game(game)
                     .build();
             favouriteRepository.save(favourite);
-            return "Game added to favourites";
+            return "Gra dodana do ulubionych";
         }
     }
     public List<FavouriteDTO> getMyFavourites(String userEmail){
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("Nie znaleziono użytkownika"));
 
         return favouriteRepository.findAllByUserId(user.getId()).stream()
                 .map(fav -> FavouriteDTO.builder()
