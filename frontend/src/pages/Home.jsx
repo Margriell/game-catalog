@@ -11,7 +11,7 @@ function Home() {
     useEffect(() => {
         setLoading(true);
 
-        api.get(`/games?page=${page}&size=12&sort=id,desc`)
+        api.get(`/games?page=${page}&size=15&sort=id,desc`)
             .then(response => {
                 setGames(response.data.content);
                 setTotalPages(response.data.totalPages);

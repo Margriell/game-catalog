@@ -37,8 +37,9 @@ function Favorites() {
                     {favorites.map(fav => (
                         <div key={fav.gameId} className="game-card">
                             <img
-                                src={'https://placehold.co/600x400/1c1c1c/2563eb?text=' + fav.gameName.substring(0,1)}
+                                src={fav.headerImage}
                                 alt={fav.gameName}
+                                onError={(e) => { e.target.src = 'https://placehold.co/600x400/222/2563eb?text=No+Image'; }}
                             />
                             <div className="card-content">
                                 <h3>{fav.gameName}</h3>
