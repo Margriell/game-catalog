@@ -1,4 +1,4 @@
-package com.gamecatalog;
+package com.gamecatalog.unit;
 
 import com.gamecatalog.dto.review.ReviewRequest;
 import com.gamecatalog.dto.review.ReviewResponse;
@@ -101,7 +101,7 @@ class ReviewServiceTest {
             reviewService.addReview(email, nonExistentGameId, request);
         });
 
-        assertEquals("Game not found", exception.getMessage());
+        assertEquals("Nie znaleziono gry", exception.getMessage());
 
         //czy na pewno w bazie nic sie nie zapisało
         verify(reviewRepository, never()).save(any());

@@ -1,4 +1,4 @@
-package com.gamecatalog;
+package com.gamecatalog.unit;
 
 import com.gamecatalog.model.user.User;
 import com.gamecatalog.model.user.enums.Role;
@@ -51,9 +51,7 @@ public class CustomUserDetailsServiceTest {
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
         //spodziewamy się usernameNotFoundException
-        assertThrows(UsernameNotFoundException.class, () -> {
-            customUserDetailsService.loadUserByUsername(email);
-        });
+        assertThrows(UsernameNotFoundException.class, () -> customUserDetailsService.loadUserByUsername(email));
     }
 
     @Test
@@ -75,6 +73,4 @@ public class CustomUserDetailsServiceTest {
         assertTrue(result.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE: ADMIN")));
     }
-
-
 }

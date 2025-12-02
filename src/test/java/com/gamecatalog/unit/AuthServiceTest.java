@@ -1,11 +1,9 @@
-package com.gamecatalog;
+package com.gamecatalog.unit;
 
 import com.gamecatalog.dto.auth.AuthRequest;
 import com.gamecatalog.dto.auth.AuthResponse;
 import com.gamecatalog.dto.auth.RegisterRequest;
 import com.gamecatalog.model.user.User;
-import com.gamecatalog.repository.GameRepository;
-import com.gamecatalog.repository.ReviewRepository;
 import com.gamecatalog.repository.UserRepository;
 import com.gamecatalog.security.JwtUtil;
 import com.gamecatalog.service.AuthService;
@@ -48,7 +46,7 @@ public class AuthServiceTest {
 
         AuthResponse response = authService.register(request);
 
-        assertEquals("Email already exists", response.getMessage());
+        assertEquals("Adres email jest już zajęty", response.getMessage());
         //nie ma tokenu w takim razie
         assertNull(response.getToken());
 
@@ -72,7 +70,7 @@ public class AuthServiceTest {
 
         assertNotNull(response.getToken());
         assertEquals("fake-jwt-token", response.getToken());
-        assertEquals("User registered successfully", response.getMessage());
+        assertEquals("Użytkownik zarejestrowany pomyślnie", response.getMessage());
 
         //czy na pewno wywołano save tylko raz
         verify(userRepository, times(1)).save(any(User.class));
@@ -92,26 +90,6 @@ public class AuthServiceTest {
         AuthResponse response = authService.login(request);
 
         assertEquals("login-token", response.getToken());
-        assertEquals("Login successful", response.getMessage());
+        assertEquals("Logowanie pomyślne", response.getMessage());
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

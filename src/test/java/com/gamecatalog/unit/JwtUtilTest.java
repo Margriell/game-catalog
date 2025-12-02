@@ -1,4 +1,4 @@
-package com.gamecatalog;
+package com.gamecatalog.unit;
 
 import com.gamecatalog.security.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class JwtUtilTest {
     private JwtUtil jwtUtil;
 
-    //przykładowe dane
     private final String SECRET_KEY = "11111111222222222222222222221111111111111133333333333111111111111111111111111";
     private final long EXPIRATION_TIME = 1000 * 60 * 60;
 
