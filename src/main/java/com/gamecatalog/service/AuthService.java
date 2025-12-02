@@ -25,7 +25,7 @@ public class AuthService {
     public AuthResponse register(RegisterRequest request) {
         if(userRepository.existsByEmail(request.getEmail())){
             return AuthResponse.builder()
-                    .message("Email already exists")
+                    .message("Adres email jest już zajęty")
                     .build();
 
         }
@@ -46,7 +46,7 @@ public class AuthService {
                 .token(jwtToken)
                 .email(user.getEmail())
                 .role(String.valueOf(user.getRole()))
-                .message("User registered successfully")
+                .message("Użytkownik zarejestrowany pomyślnie")
                 .build();
         }
 
@@ -62,7 +62,7 @@ public class AuthService {
                 .token(jwtToken)
                 .email(user.getEmail())
                 .role(String.valueOf(user.getRole()))
-                .message("Login successful")
+                .message("Logowanie pomyślne")
                 .build();
     }
 }
