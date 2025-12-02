@@ -10,14 +10,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-//stoi przed każdym zapytaniem do API
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -39,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        jwt = authHeader.substring(7); //ucinamy "Bearer "
+        jwt = authHeader.substring(7);
         userEmail = jwtUtil.extractUsername(jwt);
 
         if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -54,7 +52,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
-        //przepuszczenie żądania dalej
         filterChain.doFilter(request, response);
     }
 }

@@ -1,6 +1,5 @@
 package com.gamecatalog.controller;
 
-
 import com.gamecatalog.dto.auth.AuthRequest;
 import com.gamecatalog.dto.auth.AuthResponse;
 import com.gamecatalog.dto.auth.RegisterRequest;

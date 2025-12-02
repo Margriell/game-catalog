@@ -84,13 +84,10 @@ class ReviewServiceTest {
         User user = new User();
         user.setId(userId);
 
-        //user istnieje
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
 
-        //nie ma duplikatu recenzji
         when(reviewRepository.existsByUserIdAndGameId(userId, nonExistentGameId)).thenReturn(false);
 
-        //gra nie istnieje
         when(gameRepository.findById(nonExistentGameId)).thenReturn(Optional.empty());
 
         ReviewRequest request = new ReviewRequest();
@@ -99,7 +96,6 @@ class ReviewServiceTest {
 
         assertEquals("Nie znaleziono gry", exception.getMessage());
 
-        //czy na pewno w bazie nic sie nie zapisało
         verify(reviewRepository, never()).save(any());
     }
 }

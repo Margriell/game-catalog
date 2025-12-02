@@ -57,11 +57,10 @@ public class ReviewService {
     private ReviewResponse mapToResponse(Review review) {
         return ReviewResponse.builder()
                 .id(review.getId())
-                .userName(review.getUser().getFullName()) // Albo .getEmail()
+                .userName(review.getUser().getFullName())
                 .rating(review.getRating())
                 .reviewText(review.getReviewText())
                 .createdAt(review.getCreatedAt())
                 .build();
     }
-
 }

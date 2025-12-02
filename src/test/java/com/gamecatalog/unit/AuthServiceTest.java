@@ -41,13 +41,11 @@ public class AuthServiceTest {
         RegisterRequest request = new RegisterRequest();
         request.setEmail("zajety@email.com");
 
-        //symulowanie ze email jest juz w bazie
         when(userRepository.existsByEmail(request.getEmail())).thenReturn(true);
 
         AuthResponse response = authService.register(request);
 
         assertEquals("Adres email jest już zajęty", response.getMessage());
-        //nie ma tokenu w takim razie
         assertNull(response.getToken());
 
         verify(userRepository, never()).save(any());
@@ -61,7 +59,6 @@ public class AuthServiceTest {
         request.setEmail("Imie");
         request.setEmail("Nazwisko");
 
-        //symulowanie ze emaila nie ma w bazie
         when(userRepository.existsByEmail(request.getEmail())).thenReturn(false);
         when(passwordEncoder.encode(request.getPassword())).thenReturn("encodedPassword");
         when(jwtUtil.generateToken(any(User.class))).thenReturn("fake-jwt-token");
@@ -72,7 +69,6 @@ public class AuthServiceTest {
         assertEquals("fake-jwt-token", response.getToken());
         assertEquals("Użytkownik zarejestrowany pomyślnie", response.getMessage());
 
-        //czy na pewno wywołano save tylko raz
         verify(userRepository, times(1)).save(any(User.class));
     }
 

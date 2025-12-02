@@ -9,7 +9,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "favourites", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"user_id", "game_id"}) //jeden user moze polubic grę tylko raz
+        @UniqueConstraint(columnNames = {"user_id", "game_id"})
 })
 @Getter
 @Setter

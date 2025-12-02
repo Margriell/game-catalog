@@ -35,14 +35,12 @@ public class SecurityConfig {
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint((request, response, authException) ->
                                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
-                ) //błąd 401
+                )
                 .authorizeHttpRequests(auth -> auth
-                                //publiczne endpointy
                                 .requestMatchers("/api/auth/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/games/**").permitAll()
                                 .requestMatchers("/error").permitAll()
                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                                //wszystko inne wymaga logowania
                                 .anyRequest().authenticated()
                         )
                 .authenticationProvider(authenticationProvider())
