@@ -91,5 +91,7 @@ public class AuthServiceTest {
 
         assertEquals("login-token", response.getToken());
         assertEquals("Logowanie pomyślne", response.getMessage());
+
+        verify(authenticationManager).authenticate(any());
     }
 }

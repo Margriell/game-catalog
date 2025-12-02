@@ -49,9 +49,7 @@ class ReviewServiceTest {
 
         ReviewRequest request = new ReviewRequest();
 
-        assertThrows(RuntimeException.class, () -> {
-            reviewService.addReview(email, gameId, request);
-        });
+        assertThrows(RuntimeException.class, () -> reviewService.addReview(email, gameId, request));
     }
 
     @Test
@@ -97,9 +95,7 @@ class ReviewServiceTest {
 
         ReviewRequest request = new ReviewRequest();
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            reviewService.addReview(email, nonExistentGameId, request);
-        });
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> reviewService.addReview(email, nonExistentGameId, request));
 
         assertEquals("Nie znaleziono gry", exception.getMessage());
 

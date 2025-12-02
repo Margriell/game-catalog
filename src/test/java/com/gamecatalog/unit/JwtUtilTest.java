@@ -14,8 +14,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class JwtUtilTest {
     private JwtUtil jwtUtil;
 
-    private final String SECRET_KEY = "11111111222222222222222222221111111111111133333333333111111111111111111111111";
-    private final long EXPIRATION_TIME = 1000 * 60 * 60;
+    private static final String SECRET_KEY = "11111111222222222222222222221111111111111133333333333111111111111111111111111";
+    private static final long EXPIRATION_TIME = 1000 * 60 * 60;
 
     @BeforeEach
     void setUp() {
