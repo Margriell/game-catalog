@@ -7,8 +7,9 @@ import lombok.Data;
 
 @Data
 public class ReviewRequest {
-    @NotNull
-    @Min(1) @Max(5)
+    @NotNull(message = "Ocena jest wymagana")
+    @Min(value = 1, message = "Ocena musi być w zakresie 1-5")
+    @Max(value = 5, message = "Ocena musi być w zakresie 1-5")
     private Integer rating;
 
     private String reviewText;
