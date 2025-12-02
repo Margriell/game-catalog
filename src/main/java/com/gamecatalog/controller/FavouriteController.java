@@ -16,7 +16,7 @@ import java.util.List;
 public class FavouriteController {
     private final FavouriteService favouriteService;
 
-    @PostMapping("/game/{gameId}/favourite")
+    @PostMapping("/games/{gameId}/favourite")
     public ResponseEntity<String> toggleFavourite(
             @PathVariable Long gameId,
             @AuthenticationPrincipal UserDetails userDetails

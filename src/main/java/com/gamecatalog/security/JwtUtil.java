@@ -17,7 +17,6 @@ import java.util.function.Function;
 
 @Service
 public class JwtUtil {
-    //pobierane z application.properties
     @Value("${jwt.secret}")
     private String secretKey;
 
