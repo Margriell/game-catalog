@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../api';
 
 function Login() {
@@ -11,36 +11,46 @@ function Login() {
         e.preventDefault();
         try {
             const response = await api.post('/auth/login', { email, password });
-            // Zapisujemy token w przeglądarce
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('userRole', response.data.role);
-            alert('Zalogowano pomyślnie!');
-            navigate('/');
+            window.location.href = '/';
         } catch (error) {
-            alert('Błąd logowania. Sprawdź dane.');
+            alert('Błąd logowania. Sprawdź email i hasło.');
         }
     };
 
     return (
-        <div className="login-container">
-            <h2>Logowanie</h2>
+        <div className="auth-container">
+            <h2 style={{ textAlign: 'center', marginBottom: '30px' }}>Witaj ponownie</h2>
+
             <form onSubmit={handleLogin}>
+                <label>Email</label>
                 <input
                     type="email"
-                    placeholder="Email"
+                    placeholder="Wpisz swój email"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     required
                 />
+
+                <label>Hasło</label>
                 <input
                     type="password"
-                    placeholder="Hasło"
+                    placeholder="Wpisz hasło"
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     required
                 />
-                <button type="submit">Zaloguj się</button>
+
+                <button type="submit" className="primary-btn">Zaloguj się</button>
             </form>
+
+            <p style={{ marginTop: '20px', fontSize: '0.9rem', color: '#aaa' }}>
+                Nie masz konta?{' '}
+                <Link to="/register" style={{ color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 'bold' }}>
+                    Zarejestruj się
+                </Link>
+            </p>
         </div>
     );
 }
