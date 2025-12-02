@@ -1,12 +1,18 @@
 package com.gamecatalog.dto.game;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.util.List;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class GameDetailDTO {
     private Long id;
     private Long steamAppId;
@@ -27,8 +33,11 @@ public class GameDetailDTO {
 
     private List<SalesDTO> sales;
 
-    @Data
+    @Getter
+    @Setter
     @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class SalesDTO {
         private String region;
         private String platform;

@@ -1,10 +1,16 @@
 package com.gamecatalog.dto.auth;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class AuthResponse {
     private String token;
     private String email;

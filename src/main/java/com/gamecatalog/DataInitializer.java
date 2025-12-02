@@ -25,7 +25,6 @@ public class DataInitializer implements CommandLineRunner {
     private final OperatingSystemRepository osRepository;
     private final ObjectMapper objectMapper;
 
-    // Cache w pamięci, żeby nie pytać bazy tysiąc razy o to samo
     private final Map<String, Genre> genreCache = new HashMap<>();
     private final Map<String, Publisher> publisherCache = new HashMap<>();
     private final Map<String, Platform> platformCache = new HashMap<>();
@@ -41,11 +40,9 @@ public class DataInitializer implements CommandLineRunner {
 
         System.out.println("START IMPORTU DANYCH");
 
-        // Inicjalizacja słowników
         initRegions();
         initOS();
 
-        // Wczytanie pliku
         try (InputStream inputStream = getClass().getResourceAsStream("/steam_games_database.json")) {
             List<GameImportDTO> dtos = objectMapper.readValue(inputStream, new TypeReference<>() {});
 
@@ -54,7 +51,6 @@ public class DataInitializer implements CommandLineRunner {
 
                 Game game = new Game();
 
-                // Mapowanie proste
                 game.setSteamAppId(dto.getSteamInfo().getAppId());
                 game.setName(dto.getSteamInfo().getName());
                 game.setShortDescription(dto.getSteamInfo().getShortDescription());
@@ -64,7 +60,6 @@ public class DataInitializer implements CommandLineRunner {
                 game.setPriceStatus(dto.getSteamInfo().getPriceStatus());
                 game.setControllerSupport(dto.getSteamInfo().getControllerSupport());
 
-                // Rzutowanie na zoptymalizowane typy
                 if (dto.getSalesInfo().getYear() != null && !dto.getSalesInfo().getYear().equals("N/A")) {
                     try {
                         game.setReleaseYear(Short.valueOf(dto.getSalesInfo().getYear()));
@@ -76,18 +71,15 @@ public class DataInitializer implements CommandLineRunner {
                     game.setRequiredAge(dto.getSteamInfo().getRequiredAge().byteValue());
                 }
 
-                // Mapowanie słowników (cache)
                 game.setGenre(getGenre(dto.getSalesInfo().getGenre()));
                 game.setPublisher(getPublisher(dto.getSalesInfo().getPublisher()));
                 Platform platform = getPlatform(dto.getSalesInfo().getPlatform());
                 game.setPlatform(platform);
 
-                // Systemy operacyjne
                 if (Boolean.TRUE.equals(dto.getSteamInfo().getIsWindows())) game.getOperatingSystems().add(osCache.get("Windows"));
                 if (Boolean.TRUE.equals(dto.getSteamInfo().getIsMac())) game.getOperatingSystems().add(osCache.get("MacOS"));
                 if (Boolean.TRUE.equals(dto.getSteamInfo().getIsLinux())) game.getOperatingSystems().add(osCache.get("Linux"));
 
-                // Sprzedaż
                 addSalesData(game, regionCache.get("NA"), platform, dto.getSalesInfo().getNaSales());
                 addSalesData(game, regionCache.get("EU"), platform, dto.getSalesInfo().getEuSales());
                 addSalesData(game, regionCache.get("JP"), platform, dto.getSalesInfo().getJpSales());

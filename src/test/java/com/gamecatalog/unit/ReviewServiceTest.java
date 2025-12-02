@@ -1,4 +1,4 @@
-package com.gamecatalog;
+package com.gamecatalog.unit;
 
 import com.gamecatalog.dto.review.ReviewRequest;
 import com.gamecatalog.dto.review.ReviewResponse;
@@ -49,9 +49,7 @@ class ReviewServiceTest {
 
         ReviewRequest request = new ReviewRequest();
 
-        assertThrows(RuntimeException.class, () -> {
-            reviewService.addReview(email, gameId, request);
-        });
+        assertThrows(RuntimeException.class, () -> reviewService.addReview(email, gameId, request));
     }
 
     @Test
@@ -86,24 +84,18 @@ class ReviewServiceTest {
         User user = new User();
         user.setId(userId);
 
-        //user istnieje
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
 
-        //nie ma duplikatu recenzji
         when(reviewRepository.existsByUserIdAndGameId(userId, nonExistentGameId)).thenReturn(false);
 
-        //gra nie istnieje
         when(gameRepository.findById(nonExistentGameId)).thenReturn(Optional.empty());
 
         ReviewRequest request = new ReviewRequest();
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            reviewService.addReview(email, nonExistentGameId, request);
-        });
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> reviewService.addReview(email, nonExistentGameId, request));
 
-        assertEquals("Game not found", exception.getMessage());
+        assertEquals("Nie znaleziono gry", exception.getMessage());
 
-        //czy na pewno w bazie nic sie nie zapisało
         verify(reviewRepository, never()).save(any());
     }
 }

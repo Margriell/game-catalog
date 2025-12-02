@@ -1,6 +1,5 @@
 package com.gamecatalog.model;
 
-
 import com.gamecatalog.model.user.User;
 import jakarta.persistence.*;
 import lombok.*;

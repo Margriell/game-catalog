@@ -14,7 +14,7 @@ public class Region {
     private Long id;
 
     @Column(unique = true, nullable = false)
-    private String code; // NA, EU, JP, OTHER, GLOBAL
+    private String code;
 
     private String name;
 

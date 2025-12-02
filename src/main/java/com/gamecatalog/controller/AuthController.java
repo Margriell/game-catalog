@@ -1,6 +1,5 @@
 package com.gamecatalog.controller;
 
-
 import com.gamecatalog.dto.auth.AuthRequest;
 import com.gamecatalog.dto.auth.AuthResponse;
 import com.gamecatalog.dto.auth.RegisterRequest;
@@ -20,7 +19,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request){
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request){
         return ResponseEntity.ok(authService.register(request));
     }
 
