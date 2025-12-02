@@ -22,6 +22,7 @@ public class FavouriteService {
     private final FavouriteRepository favouriteRepository;
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
+    private static final String STEAM_IMG_URL = "https://cdn.akamai.steamstatic.com/steam/apps/%s/header.jpg";
 
     @Transactional
     public String toggleFavourite(String userEmail, Long gameId){
@@ -45,6 +46,7 @@ public class FavouriteService {
             return "Gra dodana do ulubionych";
         }
     }
+
     public List<FavouriteDTO> getMyFavourites(String userEmail){
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("Nie znaleziono użytkownika"));
@@ -53,6 +55,7 @@ public class FavouriteService {
                 .map(fav -> FavouriteDTO.builder()
                         .gameId(fav.getGame().getId())
                         .gameName(fav.getGame().getName())
+                        .headerImage(String.format(STEAM_IMG_URL, fav.getGame().getSteamAppId()))
                         .build())
                 .collect(Collectors.toList());
     }
