@@ -8,17 +8,15 @@ function GameDetails() {
     const [reviews, setReviews] = useState([]);
     const [isFavorite, setIsFavorite] = useState(false);
 
-    // --- STANY RECENZJI ---
     const [rating, setRating] = useState(5);
     const [reviewText, setReviewText] = useState("");
 
-    // Nowy stan: Czy użytkownik już dodał recenzję?
-    // Sprawdzamy w pamięci przeglądarki (localStorage) klucz np. "reviewed_game_1"
     const [hasReviewed, setHasReviewed] = useState(
         !!localStorage.getItem(`reviewed_game_${id}`)
     );
 
     const isLoggedIn = !!localStorage.getItem('token');
+    const userRole = localStorage.getItem('userRole');
 
     const fetchReviews = () => {
         api.get(`/games/${id}/reviews`).then(res => setReviews(res.data));
@@ -51,17 +49,12 @@ function GameDetails() {
         e.preventDefault();
         try {
             await api.post(`/games/${id}/reviews`, { rating, reviewText });
-
             alert("Recenzja została dodana!");
             setReviewText("");
             fetchReviews();
-
-            // SUKCES: Ukrywamy formularz i zapamiętujemy to w przeglądarce
             setHasReviewed(true);
             localStorage.setItem(`reviewed_game_${id}`, 'true');
-
         } catch (error) {
-            // Jeśli backend krzyczy, że recenzja już jest, to też ukrywamy formularz
             if (error.response && error.response.status === 500) {
                 alert("Już oceniłeś tę grę.");
                 setHasReviewed(true);
@@ -70,6 +63,20 @@ function GameDetails() {
                 alert("Nie udało się dodać recenzji.");
             }
         }
+    };
+
+    const handleDeleteReview = (reviewId) => {
+        if(!window.confirm("Czy na pewno chcesz usunąć tę recenzję?")) return;
+
+        api.delete(`/games/${reviewId}`)
+            .then(() => {
+                alert("Usunięto recenzję.");
+                fetchReviews(); // Odśwież listę po usunięciu
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Nie udało się usunąć recenzji. Sprawdź uprawnienia.");
+            });
     };
 
     if (!game) return <div className="container">Ładowanie...</div>;
@@ -106,7 +113,6 @@ function GameDetails() {
                 </div>
             </div>
 
-            {/* --- FORMULARZ (Widoczny tylko jeśli user zalogowany I jeszcze nie oceniał) --- */}
             {isLoggedIn && !hasReviewed && (
                 <div className="auth-container" style={{ margin: '40px 0', width: '100%', maxWidth: '95%', textAlign: 'left' }}>
                     <h3>Dodaj swoją recenzję</h3>
@@ -147,7 +153,6 @@ function GameDetails() {
                 </div>
             )}
 
-            {/* Komunikat zamiast formularza, jeśli już oceniono */}
             {isLoggedIn && hasReviewed && (
                 <div style={{ margin: '40px 0', padding: '20px', backgroundColor: '#1c1c1c', borderRadius: '10px', borderLeft: '5px solid var(--accent-color)' }}>
                     <h3 style={{margin: 0}}>Dziękujemy za ocenę!</h3>
@@ -168,7 +173,28 @@ function GameDetails() {
                             }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
                                     <strong style={{ color: 'var(--accent-color)' }}>{review.userName}</strong>
-                                    <span style={{ color: '#ffd700' }}>{'★'.repeat(review.rating)}</span>
+
+                                    <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                                        <span style={{ color: '#ffd700' }}>{'★'.repeat(review.rating)}</span>
+
+                                        {userRole === 'ADMIN' && (
+                                            <button
+                                                onClick={() => handleDeleteReview(review.id)}
+                                                style={{
+                                                    background: 'transparent',
+                                                    border: '1px solid #ef4444',
+                                                    color: '#ef4444',
+                                                    cursor: 'pointer',
+                                                    borderRadius: '4px',
+                                                    padding: '2px 8px',
+                                                    fontSize: '0.7rem',
+                                                    fontWeight: 'bold'
+                                                }}
+                                            >
+                                                USUŃ
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                                 <p>{review.reviewText}</p>
                                 <small style={{color: '#555'}}>{new Date(review.createdAt).toLocaleDateString()}</small>
