@@ -49,8 +49,12 @@ function GameDetails() {
         api.post(`/games/${id}/favourite`)
             .then(() => setIsFavorite(!isFavorite))
             .catch((err) => {
-                if (err.response && err.response.status === 403) alert("Musisz być zalogowany!");
-                else alert("Wystąpił błąd.");
+                if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+                    alert("Musisz być zalogowany, aby dodać grę do ulubionych!");
+                } else {
+                    console.error(err);
+                    alert("Wystąpił błąd podczas łączenia z serwerem.");
+                }
             });
     };
 
