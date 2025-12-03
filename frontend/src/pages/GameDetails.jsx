@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import api from '../api';
 
 function GameDetails() {
     const { id } = useParams();
     const [game, setGame] = useState(null);
     const [reviews, setReviews] = useState([]);
+    const [similarGames, setSimilarGames] = useState([]); // <--- NOWY STAN
     const [isFavorite, setIsFavorite] = useState(false);
 
     const [rating, setRating] = useState(5);
@@ -19,13 +20,16 @@ function GameDetails() {
     const userRole = localStorage.getItem('userRole');
     const currentUserEmail = localStorage.getItem('userEmail');
 
-    const fetchReviews = () => {
-        api.get(`/games/${id}/reviews`).then(res => setReviews(res.data));
-    };
-
     useEffect(() => {
+        window.scrollTo(0, 0);
+
         api.get(`/games/${id}`).then(res => setGame(res.data));
+
         fetchReviews();
+
+        api.get(`/games/${id}/similar`)
+            .then(res => setSimilarGames(res.data))
+            .catch(err => console.error("Błąd pobierania podobnych gier:", err));
 
         if (isLoggedIn) {
             api.get('/users/me/favorites')
@@ -36,6 +40,10 @@ function GameDetails() {
                 .catch(() => {});
         }
     }, [id]);
+
+    const fetchReviews = () => {
+        api.get(`/games/${id}/reviews`).then(res => setReviews(res.data));
+    };
 
     const toggleFavorite = () => {
         api.post(`/games/${id}/favourite`)
@@ -73,6 +81,7 @@ function GameDetails() {
             .then(() => {
                 alert("Usunięto recenzję.");
                 fetchReviews();
+
                 if (authorEmail === currentUserEmail) {
                     setHasReviewed(false);
                     localStorage.removeItem(`reviewed_game_${id}`);
@@ -208,6 +217,29 @@ function GameDetails() {
                     </ul>
                 )}
             </div>
+
+            {similarGames.length > 0 && (
+                <div style={{ marginTop: '80px', paddingTop: '20px', borderTop: '1px solid #333' }}>
+                    <h2 style={{ marginBottom: '30px' }}>Mogą Ci się spodobać</h2>
+                    <div className="game-grid">
+                        {similarGames.map(simGame => (
+                            <div key={simGame.id} className="game-card">
+                                <img
+                                    src={simGame.headerImage || 'https://placehold.co/600x400/222/2563eb?text=No+Image'}
+                                    alt={simGame.name}
+                                    style={{ height: '140px', width: '100%', objectFit: 'cover' }}
+                                />
+                                <div className="card-content">
+                                    <h3 style={{ fontSize: '0.9rem' }}>{simGame.name}</h3>
+                                    <Link to={`/game/${simGame.id}`}>
+                                        <button className="primary-btn" style={{ fontSize: '0.8rem', padding: '5px 0' }}>zobacz</button>
+                                    </Link>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
