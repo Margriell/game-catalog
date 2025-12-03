@@ -4,12 +4,14 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import GameDetails from './pages/GameDetails';
 import Favorites from './pages/Favorites';
+import Profile from './pages/Profile';
 import './App.css';
 
 function App() {
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('userRole');
+        localStorage.removeItem('userEmail');
         window.location.href = '/';
     };
 
@@ -27,6 +29,7 @@ function App() {
                     {isLoggedIn ? (
                         <>
                             <Link to="/favorites" style={{ color: 'var(--accent-color)' }}>❤ Ulubione</Link>
+                            <Link to="/profile">Mój Profil</Link>
                             <button onClick={handleLogout} className="nav-btn">Wyloguj</button>
                         </>
                     ) : (
@@ -44,6 +47,7 @@ function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/favorites" element={<Favorites />} />
                 <Route path="/game/:id" element={<GameDetails />} />
+                <Route path="/profile" element={<Profile />} />
             </Routes>
         </BrowserRouter>
     );

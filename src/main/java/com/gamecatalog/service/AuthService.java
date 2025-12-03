@@ -46,6 +46,8 @@ public class AuthService {
                 .token(jwtToken)
                 .email(user.getEmail())
                 .role(String.valueOf(user.getRole()))
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .message("Użytkownik zarejestrowany pomyślnie")
                 .build();
         }
@@ -62,6 +64,8 @@ public class AuthService {
                 .token(jwtToken)
                 .email(user.getEmail())
                 .role(String.valueOf(user.getRole()))
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .message("Logowanie pomyślne")
                 .build();
     }

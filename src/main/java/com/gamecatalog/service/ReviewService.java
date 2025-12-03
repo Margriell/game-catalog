@@ -58,6 +58,7 @@ public class ReviewService {
         return ReviewResponse.builder()
                 .id(review.getId())
                 .userName(review.getUser().getFullName())
+                .userEmail(review.getUser().getEmail())
                 .rating(review.getRating())
                 .reviewText(review.getReviewText())
                 .createdAt(review.getCreatedAt())

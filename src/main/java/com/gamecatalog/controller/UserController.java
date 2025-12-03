@@ -30,6 +30,8 @@ public class UserController {
         return ResponseEntity.ok(AuthResponse.builder()
                 .email(user.getEmail())
                 .role(user.getRole().name())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .token(null)
                 .message("Dane użytkownika: " + user.getFullName())
                 .build());

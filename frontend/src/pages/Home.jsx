@@ -8,10 +8,27 @@ function Home() {
     const [page, setPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
 
+    const [searchQuery, setSearchQuery] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchQuery);
+            setPage(0);
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
     useEffect(() => {
         setLoading(true);
 
-        api.get(`/games?page=${page}&size=15&sort=id,desc`)
+        let url = `/games?page=${page}&size=15&sort=id,desc`;
+        if (debouncedSearch) {
+            url += `&search=${debouncedSearch}`;
+        }
+
+        api.get(url)
             .then(response => {
                 setGames(response.data.content);
                 setTotalPages(response.data.totalPages);
@@ -22,7 +39,7 @@ function Home() {
                 console.error("Błąd:", error);
                 setLoading(false);
             });
-    }, [page]);
+    }, [page, debouncedSearch]);
 
     const handlePrevious = () => {
         if (page > 0) setPage(page - 1);
@@ -32,15 +49,34 @@ function Home() {
         if (page < totalPages - 1) setPage(page + 1);
     };
 
-    if (loading) return <div className="container">Ładowanie...</div>;
-
     return (
         <div className="container">
-            <h1 style={{ marginBottom: '40px' }}>Odkryj najlepsze gry</h1>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', flexWrap: 'wrap', gap: '20px' }}>
+                <h1 style={{ margin: 0 }}>Odkryj najlepsze gry</h1>
 
-            {games.length === 0 ? (
+                <input
+                    type="text"
+                    placeholder="Szukaj gry..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{
+                        padding: '12px',
+                        width: '300px',
+                        borderRadius: '30px',
+                        border: '1px solid #444',
+                        backgroundColor: '#1c1c1c',
+                        color: 'white',
+                        margin: 0
+                    }}
+                />
+            </div>
+
+            {loading ? (
+                <div className="container">Ładowanie...</div>
+            ) : games.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '50px' }}>
-                    <h3>Brak gier do wyświetlenia.</h3>
+                    <h3>Nie znaleziono gier.</h3>
+                    {debouncedSearch && <p>Spróbuj wpisać inną frazę.</p>}
                 </div>
             ) : (
                 <>
@@ -64,27 +100,29 @@ function Home() {
                         ))}
                     </div>
 
-                    <div className="pagination">
-                        <button
-                            onClick={handlePrevious}
-                            disabled={page === 0}
-                            className="nav-btn-page"
-                        >
-                            ← Poprzednia
-                        </button>
+                    {totalPages > 1 && (
+                        <div className="pagination">
+                            <button
+                                onClick={handlePrevious}
+                                disabled={page === 0}
+                                className="nav-btn-page"
+                            >
+                                ← Poprzednia
+                            </button>
 
-                        <span className="page-info">
-                            Strona {page + 1} z {totalPages}
-                        </span>
+                            <span className="page-info">
+                                Strona {page + 1} z {totalPages}
+                            </span>
 
-                        <button
-                            onClick={handleNext}
-                            disabled={page === totalPages - 1}
-                            className="nav-btn-page"
-                        >
-                            Następna →
-                        </button>
-                    </div>
+                            <button
+                                onClick={handleNext}
+                                disabled={page === totalPages - 1}
+                                className="nav-btn-page"
+                            >
+                                Następna →
+                            </button>
+                        </div>
+                    )}
                 </>
             )}
         </div>
