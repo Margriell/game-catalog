@@ -16,6 +16,7 @@ import java.util.Date;
 public class ReviewResponse {
     private Long id;
     private String userName;
+    private String userEmail;
     private Integer rating;
     private String reviewText;
     private Date createdAt;

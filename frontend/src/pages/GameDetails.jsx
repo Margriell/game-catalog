@@ -1,32 +1,35 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import api from '../api';
 
 function GameDetails() {
     const { id } = useParams();
     const [game, setGame] = useState(null);
     const [reviews, setReviews] = useState([]);
+    const [similarGames, setSimilarGames] = useState([]); // <--- NOWY STAN
     const [isFavorite, setIsFavorite] = useState(false);
 
-    // --- STANY RECENZJI ---
     const [rating, setRating] = useState(5);
     const [reviewText, setReviewText] = useState("");
 
-    // Nowy stan: Czy użytkownik już dodał recenzję?
-    // Sprawdzamy w pamięci przeglądarki (localStorage) klucz np. "reviewed_game_1"
     const [hasReviewed, setHasReviewed] = useState(
         !!localStorage.getItem(`reviewed_game_${id}`)
     );
 
     const isLoggedIn = !!localStorage.getItem('token');
-
-    const fetchReviews = () => {
-        api.get(`/games/${id}/reviews`).then(res => setReviews(res.data));
-    };
+    const userRole = localStorage.getItem('userRole');
+    const currentUserEmail = localStorage.getItem('userEmail');
 
     useEffect(() => {
+        window.scrollTo(0, 0);
+
         api.get(`/games/${id}`).then(res => setGame(res.data));
+
         fetchReviews();
+
+        api.get(`/games/${id}/similar`)
+            .then(res => setSimilarGames(res.data))
+            .catch(err => console.error("Błąd pobierania podobnych gier:", err));
 
         if (isLoggedIn) {
             api.get('/users/me/favorites')
@@ -38,12 +41,20 @@ function GameDetails() {
         }
     }, [id]);
 
+    const fetchReviews = () => {
+        api.get(`/games/${id}/reviews`).then(res => setReviews(res.data));
+    };
+
     const toggleFavorite = () => {
         api.post(`/games/${id}/favourite`)
             .then(() => setIsFavorite(!isFavorite))
             .catch((err) => {
-                if (err.response && err.response.status === 403) alert("Musisz być zalogowany!");
-                else alert("Wystąpił błąd.");
+                if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+                    alert("Musisz być zalogowany, aby dodać grę do ulubionych!");
+                } else {
+                    console.error(err);
+                    alert("Wystąpił błąd podczas łączenia z serwerem.");
+                }
             });
     };
 
@@ -51,17 +62,12 @@ function GameDetails() {
         e.preventDefault();
         try {
             await api.post(`/games/${id}/reviews`, { rating, reviewText });
-
             alert("Recenzja została dodana!");
             setReviewText("");
             fetchReviews();
-
-            // SUKCES: Ukrywamy formularz i zapamiętujemy to w przeglądarce
             setHasReviewed(true);
             localStorage.setItem(`reviewed_game_${id}`, 'true');
-
         } catch (error) {
-            // Jeśli backend krzyczy, że recenzja już jest, to też ukrywamy formularz
             if (error.response && error.response.status === 500) {
                 alert("Już oceniłeś tę grę.");
                 setHasReviewed(true);
@@ -70,6 +76,25 @@ function GameDetails() {
                 alert("Nie udało się dodać recenzji.");
             }
         }
+    };
+
+    const handleDeleteReview = (reviewId, authorEmail) => {
+        if(!window.confirm("Czy na pewno chcesz usunąć tę recenzję?")) return;
+
+        api.delete(`/games/${reviewId}`)
+            .then(() => {
+                alert("Usunięto recenzję.");
+                fetchReviews();
+
+                if (authorEmail === currentUserEmail) {
+                    setHasReviewed(false);
+                    localStorage.removeItem(`reviewed_game_${id}`);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Nie udało się usunąć recenzji. Sprawdź uprawnienia.");
+            });
     };
 
     if (!game) return <div className="container">Ładowanie...</div>;
@@ -106,7 +131,6 @@ function GameDetails() {
                 </div>
             </div>
 
-            {/* --- FORMULARZ (Widoczny tylko jeśli user zalogowany I jeszcze nie oceniał) --- */}
             {isLoggedIn && !hasReviewed && (
                 <div className="auth-container" style={{ margin: '40px 0', width: '100%', maxWidth: '95%', textAlign: 'left' }}>
                     <h3>Dodaj swoją recenzję</h3>
@@ -147,7 +171,6 @@ function GameDetails() {
                 </div>
             )}
 
-            {/* Komunikat zamiast formularza, jeśli już oceniono */}
             {isLoggedIn && hasReviewed && (
                 <div style={{ margin: '40px 0', padding: '20px', backgroundColor: '#1c1c1c', borderRadius: '10px', borderLeft: '5px solid var(--accent-color)' }}>
                     <h3 style={{margin: 0}}>Dziękujemy za ocenę!</h3>
@@ -168,7 +191,28 @@ function GameDetails() {
                             }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
                                     <strong style={{ color: 'var(--accent-color)' }}>{review.userName}</strong>
-                                    <span style={{ color: '#ffd700' }}>{'★'.repeat(review.rating)}</span>
+
+                                    <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                                        <span style={{ color: '#ffd700' }}>{'★'.repeat(review.rating)}</span>
+
+                                        {(userRole === 'ADMIN' || (currentUserEmail && currentUserEmail === review.userEmail)) && (
+                                            <button
+                                                onClick={() => handleDeleteReview(review.id, review.userEmail)}
+                                                style={{
+                                                    background: 'transparent',
+                                                    border: '1px solid #ef4444',
+                                                    color: '#ef4444',
+                                                    cursor: 'pointer',
+                                                    borderRadius: '4px',
+                                                    padding: '2px 8px',
+                                                    fontSize: '0.7rem',
+                                                    fontWeight: 'bold'
+                                                }}
+                                            >
+                                                USUŃ
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                                 <p>{review.reviewText}</p>
                                 <small style={{color: '#555'}}>{new Date(review.createdAt).toLocaleDateString()}</small>
@@ -177,6 +221,29 @@ function GameDetails() {
                     </ul>
                 )}
             </div>
+
+            {similarGames.length > 0 && (
+                <div style={{ marginTop: '80px', paddingTop: '20px', borderTop: '1px solid #333' }}>
+                    <h2 style={{ marginBottom: '30px' }}>Mogą Ci się spodobać</h2>
+                    <div className="game-grid">
+                        {similarGames.map(simGame => (
+                            <div key={simGame.id} className="game-card">
+                                <img
+                                    src={simGame.headerImage || 'https://placehold.co/600x400/222/2563eb?text=No+Image'}
+                                    alt={simGame.name}
+                                    style={{ height: '140px', width: '100%', objectFit: 'cover' }}
+                                />
+                                <div className="card-content">
+                                    <h3 style={{ fontSize: '0.9rem' }}>{simGame.name}</h3>
+                                    <Link to={`/game/${simGame.id}`}>
+                                        <button className="primary-btn" style={{ fontSize: '0.8rem', padding: '5px 0' }}>zobacz</button>
+                                    </Link>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
