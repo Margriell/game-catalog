@@ -17,6 +17,7 @@ function GameDetails() {
 
     const isLoggedIn = !!localStorage.getItem('token');
     const userRole = localStorage.getItem('userRole');
+    const currentUserEmail = localStorage.getItem('userEmail');
 
     const fetchReviews = () => {
         api.get(`/games/${id}/reviews`).then(res => setReviews(res.data));
@@ -65,13 +66,17 @@ function GameDetails() {
         }
     };
 
-    const handleDeleteReview = (reviewId) => {
+    const handleDeleteReview = (reviewId, authorEmail) => {
         if(!window.confirm("Czy na pewno chcesz usunąć tę recenzję?")) return;
 
         api.delete(`/games/${reviewId}`)
             .then(() => {
                 alert("Usunięto recenzję.");
-                fetchReviews(); // Odśwież listę po usunięciu
+                fetchReviews();
+                if (authorEmail === currentUserEmail) {
+                    setHasReviewed(false);
+                    localStorage.removeItem(`reviewed_game_${id}`);
+                }
             })
             .catch(err => {
                 console.error(err);
@@ -177,9 +182,9 @@ function GameDetails() {
                                     <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
                                         <span style={{ color: '#ffd700' }}>{'★'.repeat(review.rating)}</span>
 
-                                        {userRole === 'ADMIN' && (
+                                        {(userRole === 'ADMIN' || (currentUserEmail && currentUserEmail === review.userEmail)) && (
                                             <button
-                                                onClick={() => handleDeleteReview(review.id)}
+                                                onClick={() => handleDeleteReview(review.id, review.userEmail)}
                                                 style={{
                                                     background: 'transparent',
                                                     border: '1px solid #ef4444',
