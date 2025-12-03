@@ -13,6 +13,7 @@ function Login() {
             const response = await api.post('/auth/login', { email, password });
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('userRole', response.data.role);
+            localStorage.setItem('userEmail', response.data.email);
             window.location.href = '/';
         } catch (error) {
             alert('Błąd logowania. Sprawdź email i hasło.');

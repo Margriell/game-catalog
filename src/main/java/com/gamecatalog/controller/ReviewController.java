@@ -31,4 +31,19 @@ public class ReviewController {
     public ResponseEntity<List<ReviewResponse>> getReviews(@PathVariable Long gameId) {
         return ResponseEntity.ok(reviewService.getGameReviews(gameId));
     }
+    @DeleteMapping("/{reviewId}") // /api/games/{reviewId}
+    public ResponseEntity<String> deleteReview(
+            @PathVariable Long reviewId,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        try {
+            reviewService.deleteReview(reviewId, userDetails.getUsername());
+            return ResponseEntity.ok("Recenzja została usunięta");
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("Brak uprawnień")) {
+                return ResponseEntity.status(403).body(e.getMessage());
+            }
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

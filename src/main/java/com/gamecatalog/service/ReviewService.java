@@ -58,9 +58,27 @@ public class ReviewService {
         return ReviewResponse.builder()
                 .id(review.getId())
                 .userName(review.getUser().getFullName())
+                .userEmail(review.getUser().getEmail())
                 .rating(review.getRating())
                 .reviewText(review.getReviewText())
                 .createdAt(review.getCreatedAt())
                 .build();
+    }
+    @Transactional
+    public void deleteReview(Long reviewId, String userEmail) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new RuntimeException("Nie znaleziono recenzji"));
+
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("Nie znaleziono użytkownika"));
+
+        boolean isAuthor = review.getUser().getId().equals(user.getId());
+        boolean isAdmin = user.getRole() == com.gamecatalog.model.user.enums.Role.ADMIN;
+
+        if (!isAuthor && !isAdmin) {
+            throw new RuntimeException("Brak uprawnień do usunięcia tej recenzji"); // To zwróci błąd 500, w kontrolerze obsłużymy to lepiej lub dodaj @ResponseStatus(HttpStatus.FORBIDDEN) w exception handlerze
+        }
+
+        reviewRepository.delete(review);
     }
 }
