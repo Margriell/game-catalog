@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/games")
@@ -31,5 +32,10 @@ public class GameController {
     @GetMapping("/{id}")
     public ResponseEntity<GameDetailDTO> getGameById(@PathVariable Long id) {
         return ResponseEntity.ok(gameService.getGameById(id));
+    }
+
+    @GetMapping("/{id}/similar")
+    public ResponseEntity<List<GameSummaryDTO>> getSimilarGames(@PathVariable Long id) {
+        return ResponseEntity.ok(gameService.getSimilarGames(id));
     }
 }

@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GameRepository extends JpaRepository<Game, Long> {
     Page<Game> findByNameContainingIgnoreCase(String name, Pageable pageable);
+    Page<Game> findByGenreIdAndIdNot(Long genreId, Long id, Pageable pageable);
 }

@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.data.domain.PageRequest;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -37,5 +39,19 @@ public class GameService {
         Game game = gameRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nie znaleziono gry o id: " + id));
         return gameMapper.toDetailDTO(game);
+    }
+
+    @Transactional(readOnly = true)
+    public List<GameSummaryDTO> getSimilarGames(Long gameId) {
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nie znaleziono gry"));
+
+        if (game.getGenre() == null) {
+            return List.of();
+        }
+
+        return gameRepository.findByGenreIdAndIdNot(game.getGenre().getId(), gameId, PageRequest.of(0, 5))
+                .map(gameMapper::toSummaryDTO)
+                .getContent();
     }
 }
