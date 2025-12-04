@@ -1,5 +1,7 @@
 # Game Catalog Application
 
+**Repozytorium:** https://github.com/Margriell/game-catalog
+
 Aplikacja webowa do przeglądania katalogu gier, zarządzania ulubionymi tytułami oraz dodawania recenzji. Projekt składa się z backendu opartego o **Java Spring Boot** oraz frontendu napisanego w **React**.
 
 ---
